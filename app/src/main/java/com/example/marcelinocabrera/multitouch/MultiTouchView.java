@@ -93,6 +93,22 @@ public class MultiTouchView extends View {
         switch(action) {
             // Pulsamos
             case MotionEvent.ACTION_DOWN: {
+                // Veo si hay algún punto "cercano" (tengo en cuenta el tamaño de la pulsación)
+                float tam_pulsacion = event.getSize();
+                PointF pos_pulsacion = new PointF(event.getX(), event.getY());
+                float dist;
+
+                for(int i=0; i<touchPoints.size(); i++){
+                    // Calculo la distancia entre ese punto y el nuevo
+                    dist = getDistance(pos_pulsacion, touchPoints.get(i));
+
+                    if (dist <= tam_pulsacion){
+                        // SELECT POINT
+                    }
+                }
+
+
+
                 setPoints(event);// Fija puntos
                 invalidate(); // Redibuja
                 Log.i("INFO", "Presión:" + event.getPressure());
@@ -101,13 +117,20 @@ public class MultiTouchView extends View {
             }
             // Movemos
             case MotionEvent.ACTION_MOVE:   {
+                // Comprue
+
+
+
+
+
+
                 setPoints(event);// Fija puntos nuevos
                 invalidate(); // Redibuja
                 break;
             }
             // Levantamos
             case MotionEvent.ACTION_UP:   {
-                initialize (); // Borra la pantalla
+                // initialize (); // Borra la pantalla
                 break;
             }
 
@@ -121,7 +144,13 @@ public class MultiTouchView extends View {
             }
             // Levantamos
             case MotionEvent.ACTION_POINTER_UP:   {
-                initialize (); // Borra la pantalla
+                // initialize (); // Borra la pantalla
+                break;
+            }
+
+            // La ventana pierde el focus
+            case MotionEvent.ACTION_CANCEL:{
+                initialize(); // Borra la pantalla
                 break;
             }
 
@@ -135,7 +164,9 @@ public class MultiTouchView extends View {
         drawingPaint.setColor(Color.MAGENTA);
         drawingPaint.setStrokeWidth(STROKE_WIDTH);
         drawingPaint.setStyle(Paint.Style.FILL);
-        drawingPaint.setAntiAlias(true);
+        drawingPaint.setAntiAlias(true);{
+
+        }
         touchPoints = new ArrayList<PointF>();
     }
 
@@ -147,4 +178,11 @@ public class MultiTouchView extends View {
         return point;
     }
 
+    private float getDistance(PointF a, PointF b){
+        double distance;
+
+        distance = Math.sqrt((a.x - b.x)*(a.x - b.x) + (a.y - b.y)*(a.y - b.y));
+
+        return (float)distance;
+    }
 }
