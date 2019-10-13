@@ -9,6 +9,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 import android.util.Log;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
@@ -93,39 +94,66 @@ public class MultiTouchView extends View {
         switch(action) {
             // Pulsamos
             case MotionEvent.ACTION_DOWN: {
-                // Veo si hay algún punto "cercano" (tengo en cuenta el tamaño de la pulsación)
-                float tam_pulsacion = event.getSize();
+                // Veo si hay algún punto "cercano"
+                float min_dist = 100;
                 PointF pos_pulsacion = new PointF(event.getX(), event.getY());
                 float dist;
+                boolean ya_encontrado = false;
 
-                for(int i=0; i<touchPoints.size(); i++){
+                for(int i=0; i<touchPoints.size() && !ya_encontrado; i++){
                     // Calculo la distancia entre ese punto y el nuevo
                     dist = getDistance(pos_pulsacion, touchPoints.get(i));
 
-                    if (dist <= tam_pulsacion){
-                        // SELECT POINT
+                    // He pulsado sobre un punto ya existente
+                    if (dist <= min_dist){
+                        // Cambio la posición del punto
+                        touchPoints.get(i).x = pos_pulsacion.x;
+                        touchPoints.get(i).y = pos_pulsacion.y;
+                        ya_encontrado = true;
                     }
                 }
 
+                // No existe ningún punto en esa posición -> creo uno nuevo
+                if (!ya_encontrado){
+                    touchPoints.add(pos_pulsacion);
+                }
 
-
-                setPoints(event);// Fija puntos
                 invalidate(); // Redibuja
                 Log.i("INFO", "Presión:" + event.getPressure());
                 Log.i("INFO", "Tamaño:" + event.getSize());
+
                 break;
             }
             // Movemos
             case MotionEvent.ACTION_MOVE:   {
-                // Comprue
+                // Veo si hay algún punto "cercano"
+                float min_dist = 75;
+                PointF pos_pulsacion = new PointF(event.getX(), event.getY());
+                float dist;
+                boolean ya_encontrado = false;
 
+                for(int i=0; i<touchPoints.size() && !ya_encontrado; i++){
+                    // Calculo la distancia entre ese punto y el nuevo
+                    dist = getDistance(pos_pulsacion, touchPoints.get(i));
 
+                    // He pulsado sobre un punto ya existente
+                    if (dist <= min_dist){
+                        // Cambio la posición del punto
+                        touchPoints.get(i).x = pos_pulsacion.x;
+                        touchPoints.get(i).y = pos_pulsacion.y;
+                        ya_encontrado = true;
+                    }
+                }
 
+                // No existe ningún punto en esa posición -> creo uno nuevo
+                if (!ya_encontrado){
+                    touchPoints.add(pos_pulsacion);
+                }
 
-
-
-                setPoints(event);// Fija puntos nuevos
                 invalidate(); // Redibuja
+                Log.i("INFO", "Presión:" + event.getPressure());
+                Log.i("INFO", "Tamaño:" + event.getSize());
+
                 break;
             }
             // Levantamos
